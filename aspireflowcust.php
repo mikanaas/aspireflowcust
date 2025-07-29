@@ -6,35 +6,21 @@ Version: 1.0
 Author: Kim
 */
 
-add_action('template_redirect', function () {
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    $uri = $_SERVER['REQUEST_URI'] ?? '';
-
+add_action('pre_get_posts', function ($query) {
     if (
-        ($host === 'aspireflow.no' || $host === 'www.aspireflow.no') &&
-        ($uri === '/' || $uri === '/index.php')
+        !is_admin() &&
+        $query->is_main_query() &&
+        isset($_SERVER['HTTP_HOST']) &&
+        ($_SERVER['HTTP_HOST'] === 'aspireflow.no' || $_SERVER['HTTP_HOST'] === 'www.aspireflow.no') &&
+        $query->is_front_page()
     ) {
-        $page_id = 2826;
-        $page = get_post($page_id);
+        // Overstyr til riktig side
+        $query->set('page_id', 2826);
 
-        if ($page && $page->post_status === 'publish') {
-            global $post, $wp_query;
-
-            $post = $page;
-            $wp_query->post = $page;
-            $wp_query->queried_object = $page;
-            $wp_query->queried_object_id = $page_id;
-            $wp_query->is_page = true;
-            $wp_query->is_singular = true;
-            $wp_query->is_home = false;
-            $wp_query->is_front_page = true;
-            $wp_query->is_404 = false;
-
-            setup_postdata($post);
-
-            status_header(200); // Viktig – fortell WP/DIVI at dette er OK
-            // IKKE bruk get_header/get_footer/the_content
-            // La templatemotoren fullføre
-        }
+        // Fortell WP at dette er en vanlig side, ikke standard forside
+        $query->is_page = true;
+        $query->is_singular = true;
+        $query->is_home = false;
+        $query->is_front_page = true;
     }
 });
