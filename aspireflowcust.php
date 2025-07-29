@@ -14,13 +14,13 @@ add_action('pre_get_posts', function ($query) {
         ($_SERVER['HTTP_HOST'] === 'aspireflow.no' || $_SERVER['HTTP_HOST'] === 'www.aspireflow.no') &&
         $query->is_front_page()
     ) {
-        // Overstyr til riktig side
-        $query->set('page_id', 2826);
-
-        // Fortell WP at dette er en vanlig side, ikke standard forside
-        $query->is_page = true;
-        $query->is_singular = true;
-        $query->is_home = false;
-        $query->is_front_page = true;
+        $page = get_page_by_path('aspireflow'); // sluggen
+        if ($page) {
+            $query->set('page_id', $page->ID);
+            $query->is_page = true;
+            $query->is_singular = true;
+            $query->is_home = false;
+            $query->is_front_page = true;
+        }
     }
 });
