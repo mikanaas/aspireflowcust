@@ -7,9 +7,10 @@ Author: Kim
 */
 
 add_action('template_redirect', function () {
+    // Gjelder kun for aspireflow.no forsiden
     if (
         ($_SERVER['HTTP_HOST'] === 'aspireflow.no' || $_SERVER['HTTP_HOST'] === 'www.aspireflow.no') &&
-        is_front_page()
+        $_SERVER['REQUEST_URI'] === '/'
     ) {
         $page_id = 2826;
         $page = get_post($page_id);
@@ -28,7 +29,7 @@ add_action('template_redirect', function () {
             $wp_query->is_404 = false;
 
             setup_postdata($post);
-            include get_page_template();
+            include get_page_template(); // laster riktig side-mal
             exit;
         }
     }
