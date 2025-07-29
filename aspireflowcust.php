@@ -32,11 +32,9 @@ add_action('template_redirect', function () {
 
             setup_postdata($post);
 
-            // VIS DIVI-BYGGET SIDEINNHOLD DIREKTE
-            get_header();
-            echo apply_filters('the_content', $post->post_content);
-            get_footer();
-            exit;
+            status_header(200); // Viktig – fortell WP/DIVI at dette er OK
+            // IKKE bruk get_header/get_footer/the_content
+            // La templatemotoren fullføre
         }
     }
 });
